@@ -1,7 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import ReceiptTemplate from "@/components/receiptTemplate";
-
+import { useReactToPrint } from "react-to-print";
+import { Button } from "@/components/ui/button";
+import "./app.css";
 export interface OrderItem {
   id: string;
   name: string;
@@ -23,6 +25,9 @@ function App() {
     orderList: [],
   });
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const reactToPrint = useReactToPrint({ contentRef });
+
   // ใช้ useCallback เพื่อให้ function reference เหมือนเดิม ลด re-render
   const updateReceiptData = useCallback(
     (field: keyof ReceiptData, value: any) => {
@@ -41,8 +46,17 @@ function App() {
         updateReceiptData={updateReceiptData}
       />
       <div className="container pr-80">
-        <ReceiptTemplate receiptData={receiptData} />
+        <div ref={contentRef}>
+          <ReceiptTemplate receiptData={receiptData} />
+        </div>
       </div>
+      <Button
+        variant="default"
+        onClick={reactToPrint}
+        className="absolute cursor-pointer rounded-full bottom-4 right-1/2 w-fit px-24"
+      >
+        Print
+      </Button>
     </div>
   );
 }

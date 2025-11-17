@@ -54,7 +54,6 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
 
   const { productTotal, totalShipping, totalPackaging, grandTotal } = totals;
   const { receiptNumber, formattedDate, formattedTime } = dateInfo;
-
   return (
     <div className="w-[80mm] h-fit mx-auto border px-4 py-6 space-y-2">
       <h1 className="font-bold w-full text-center py-4">ใบเสร็จชำระเงิน</h1>
