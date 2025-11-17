@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import ReceiptTemplate from "@/components/receiptTemplate";
 
@@ -23,12 +23,16 @@ function App() {
     orderList: [],
   });
 
-  const updateReceiptData = (field: keyof ReceiptData, value: any) => {
-    setReceiptData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  // ใช้ useCallback เพื่อให้ function reference เหมือนเดิม ลด re-render
+  const updateReceiptData = useCallback(
+    (field: keyof ReceiptData, value: any) => {
+      setReceiptData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    },
+    []
+  );
 
   return (
     <div className="flex flex-row-reverse">

@@ -1,52 +1,60 @@
-import {type ReceiptData } from "@/App";
+import { memo, useMemo } from "react";
+import { type ReceiptData } from "@/App";
 
 interface ReceiptTemplateProps {
   receiptData: ReceiptData;
 }
 
-export default function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
+function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
   // คำนวณยอดรวมแต่ละรายการ (ราคาสินค้า + ค่าขนส่ง + ค่าบรรจุภัณฑ์)
   const calculateItemTotal = (item: (typeof receiptData.orderList)[0]) => {
     return item.shippingCost + item.packagingCost;
   };
 
-  // คำนวณยอดรวมสินค้าทั้งหมด
-  const productTotal = receiptData.orderList.reduce((sum) => sum, 0);
+  // ใช้ useMemo เพื่อ cache การคำนวณ - จะคำนวณใหม่ก็ต่อเมื่อ orderList เปลี่ยน
+  const totals = useMemo(() => {
+    const productTotal = receiptData.orderList.reduce((sum) => sum, 0);
 
-  // คำนวณค่าขนส่งรวม
-  const totalShipping = receiptData.orderList.reduce(
-    (sum, item) => sum + item.shippingCost,
-    0
-  );
+    const totalShipping = receiptData.orderList.reduce(
+      (sum, item) => sum + item.shippingCost,
+      0
+    );
 
-  // คำนวณค่าบรรจุภัณฑ์รวม
-  const totalPackaging = receiptData.orderList.reduce(
-    (sum, item) => sum + item.packagingCost,
-    0
-  );
+    const totalPackaging = receiptData.orderList.reduce(
+      (sum, item) => sum + item.packagingCost,
+      0
+    );
 
-  // ยอดรวมทั้งหมด
-  const grandTotal = receiptData.orderList.reduce(
-    (sum, item) => sum + calculateItemTotal(item),
-    0
-  );
+    const grandTotal = receiptData.orderList.reduce(
+      (sum, item) => sum + calculateItemTotal(item),
+      0
+    );
 
-  // สร้างเลขที่ใบเสร็จ
-  const currentDate = new Date();
-  const receiptNumber = `S36_${currentDate.getFullYear()}${String(
-    currentDate.getMonth() + 1
-  ).padStart(2, "0")}${String(currentDate.getDate()).padStart(2, "0")}`;
+    return { productTotal, totalShipping, totalPackaging, grandTotal };
+  }, [receiptData.orderList]);
 
-  // Format วันที่และเวลา
-  const formattedDate = currentDate.toLocaleDateString("th-TH", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-  const formattedTime = currentDate.toLocaleTimeString("th-TH", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  // สร้างเลขที่ใบเสร็จและวันที่ - คำนวณครั้งเดียวตอน mount
+  const dateInfo = useMemo(() => {
+    const currentDate = new Date();
+    const receiptNumber = `S36_${currentDate.getFullYear()}${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}${String(currentDate.getDate()).padStart(2, "0")}`;
+
+    const formattedDate = currentDate.toLocaleDateString("th-TH", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    const formattedTime = currentDate.toLocaleTimeString("th-TH", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    return { receiptNumber, formattedDate, formattedTime };
+  }, []); // Empty dependency = คำนวณครั้งเดียว
+
+  const { productTotal, totalShipping, totalPackaging, grandTotal } = totals;
+  const { receiptNumber, formattedDate, formattedTime } = dateInfo;
 
   return (
     <div className="w-[80mm] h-fit mx-auto border px-4 py-6 space-y-2">
@@ -140,3 +148,6 @@ export default function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
     </div>
   );
 }
+
+// ใช้ memo เพื่อป้องกัน re-render ที่ไม่จำเป็น
+export default memo(ReceiptTemplate);
