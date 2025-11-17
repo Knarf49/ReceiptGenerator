@@ -10,7 +10,6 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
   const calculateItemTotal = (item: (typeof receiptData.orderList)[0]) => {
     return item.shippingCost + item.packagingCost;
   };
-
   // ใช้ useMemo เพื่อ cache การคำนวณ - จะคำนวณใหม่ก็ต่อเมื่อ orderList เปลี่ยน
   const totals = useMemo(() => {
     const productTotal = receiptData.orderList.reduce((sum) => sum, 0);
