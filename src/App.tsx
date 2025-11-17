@@ -1,10 +1,45 @@
+import { useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
+import ReceiptTemplate from "@/components/receiptTemplate";
+
+export interface OrderItem {
+  id: string;
+  name: string;
+  shippingCost: number;
+  packagingCost: number;
+  receiver: string;
+  shippingCompany: string;
+  province: string;
+}
+
+export interface ReceiptData {
+  customerName: string;
+  orderList: OrderItem[];
+}
 
 function App() {
+  const [receiptData, setReceiptData] = useState<ReceiptData>({
+    customerName: "",
+    orderList: [],
+  });
+
+  const updateReceiptData = (field: keyof ReceiptData, value: any) => {
+    setReceiptData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
   return (
-    <>
-      <Sidebar></Sidebar>
-    </>
+    <div className="flex flex-row-reverse">
+      <Sidebar
+        receiptData={receiptData}
+        updateReceiptData={updateReceiptData}
+      />
+      <div className="container">
+        <ReceiptTemplate receiptData={receiptData} />
+      </div>
+    </div>
   );
 }
 
