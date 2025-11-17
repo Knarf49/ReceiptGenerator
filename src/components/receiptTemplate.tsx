@@ -56,8 +56,12 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
   const { receiptNumber, formattedDate, formattedTime } = dateInfo;
   return (
     <div className="w-[80mm] h-fit mx-auto border px-4 py-6 space-y-2">
-      <h1 className="font-bold w-full text-center py-4">ใบเสร็จชำระเงิน</h1>
-      <h1 className="font-bold w-full text-center">ร้าน S36 โพสต์ ช็อป</h1>
+      <img
+        src="/S36_logo.svg"
+        alt="S36 post shop"
+        className="size-20 mx-auto"
+      />
+      <h1 className="font-bold w-full text-center">ใบเสร็จชำระเงิน</h1>
       <div className="flex justify-between text-sm">
         <p>
           Print Time: {formattedDate} {formattedTime}
@@ -113,7 +117,7 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
                   </div>
                 </div>
                 <div className="flex justify-between font-semibold text-sm pt-1 border-t">
-                  <span>รวมรายการนี้:</span>
+                  <span>ราคาสุทธิ:</span>
                   <span>{calculateItemTotal(item).toFixed(2)} บาท</span>
                 </div>
               </div>
