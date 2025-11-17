@@ -36,7 +36,7 @@ function App() {
         receiptData={receiptData}
         updateReceiptData={updateReceiptData}
       />
-      <div className="container">
+      <div className="container pr-80">
         <ReceiptTemplate receiptData={receiptData} />
       </div>
     </div>
