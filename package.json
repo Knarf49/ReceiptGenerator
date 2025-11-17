@@ -1,6 +1,6 @@
 {
+  "homepage": "https://knarf49.github.io/",
   "name": "receiptgen",
-  "homepage": "https://knarf49.github.io/ReceiptGenerator/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
