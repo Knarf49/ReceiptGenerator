@@ -53,7 +53,7 @@ function App() {
       <Button
         variant="default"
         onClick={reactToPrint}
-        className="absolute cursor-pointer rounded-full bottom-4 right-1/2 w-fit px-24"
+        className="fixed cursor-pointer rounded-full bottom-4 right-[25%] w-fit px-24"
       >
         Print
       </Button>
