@@ -214,7 +214,9 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
                   <SelectContent className="bg-white">
                     <SelectItem value="ไปรษณีย์ไทย">ไปรษณีย์ไทย</SelectItem>
                     <SelectItem value="Flash Express">Flash Express</SelectItem>
-                    <SelectItem value="Kerry Express">Kerry Express</SelectItem>
+                    <SelectItem value="KEX">KEX</SelectItem>
+                    <SelectItem value="DHL">DHL</SelectItem>
+                    <SelectItem value="SPX">SPX</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -1,8 +1,57 @@
 import { memo, useMemo } from "react";
-import { type ReceiptData } from "@/App";
+
+interface ReceiptData {
+  customerName: string;
+  orderList: Array<{
+    id: string;
+    name: string;
+    shippingCost: number;
+    packagingCost: number;
+    shippingCompany?: string;
+    receiver?: string;
+    province?: string;
+  }>;
+}
 
 interface ReceiptTemplateProps {
   receiptData: ReceiptData;
+}
+
+// ฟังก์ชันสำหรับดึงและอัพเดทเลขที่ใบเสร็จด้วย localStorage
+function getNextReceiptNumber(): { receiptNumber: string; counter: number } {
+  const currentDate = new Date();
+  const dateKey = `${currentDate.getFullYear()}-${String(
+    currentDate.getMonth() + 1
+  ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
+
+  // ดึงข้อมูลจาก localStorage
+  const stored = localStorage.getItem("receiptCounter");
+  let receiptStorage: { date: string; counter: number } = stored
+    ? JSON.parse(stored)
+    : { date: "", counter: 0 };
+
+  // ถ้าเป็นวันใหม่ ให้ reset counter
+  if (receiptStorage.date !== dateKey) {
+    receiptStorage = {
+      date: dateKey,
+      counter: 1,
+    };
+  } else {
+    // ถ้าเป็นวันเดียวกัน ให้เพิ่ม counter
+    receiptStorage.counter += 1;
+  }
+
+  // บันทึกกลับไป localStorage
+  localStorage.setItem("receiptCounter", JSON.stringify(receiptStorage));
+
+  // สร้างเลขที่ใบเสร็จในรูปแบบ S36_YYYYMMDD_XXX
+  const receiptNumber = `S36_${currentDate.getFullYear()}${String(
+    currentDate.getMonth() + 1
+  ).padStart(2, "0")}${String(currentDate.getDate()).padStart(2, "0")}_${String(
+    receiptStorage.counter
+  ).padStart(2, "0")}`;
+
+  return { receiptNumber, counter: receiptStorage.counter };
 }
 
 function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
@@ -10,6 +59,7 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
   const calculateItemTotal = (item: (typeof receiptData.orderList)[0]) => {
     return item.shippingCost + item.packagingCost;
   };
+
   // ใช้ useMemo เพื่อ cache การคำนวณ - จะคำนวณใหม่ก็ต่อเมื่อ orderList เปลี่ยน
   const totals = useMemo(() => {
     const productTotal = receiptData.orderList.reduce((sum) => sum, 0);
@@ -32,12 +82,10 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
     return { productTotal, totalShipping, totalPackaging, grandTotal };
   }, [receiptData.orderList]);
 
-  // สร้างเลขที่ใบเสร็จและวันที่ - คำนวณครั้งเดียวตอน mount
+  // สร้างเลขที่ใบเสร็จและวันที่ - เรียกใช้ครั้งเดียวตอน mount
   const dateInfo = useMemo(() => {
     const currentDate = new Date();
-    const receiptNumber = `S36_${currentDate.getFullYear()}${String(
-      currentDate.getMonth() + 1
-    ).padStart(2, "0")}${String(currentDate.getDate()).padStart(2, "0")}`;
+    const { receiptNumber, counter } = getNextReceiptNumber();
 
     const formattedDate = currentDate.toLocaleDateString("th-TH", {
       year: "numeric",
@@ -49,11 +97,12 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
       minute: "2-digit",
     });
 
-    return { receiptNumber, formattedDate, formattedTime };
+    return { receiptNumber, formattedDate, formattedTime, counter };
   }, []); // Empty dependency = คำนวณครั้งเดียว
 
   const { productTotal, totalShipping, totalPackaging, grandTotal } = totals;
   const { receiptNumber, formattedDate, formattedTime } = dateInfo;
+
   return (
     <div className="w-[80mm] h-fit mx-auto border px-4 py-6 space-y-2">
       <img
@@ -125,21 +174,6 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
           ))}
         </div>
       )}
-
-      <div className="border-t-2 pt-2 space-y-1 mt-2">
-        <div className="flex justify-between text-sm">
-          <span>รวมค่าสินค้า:</span>
-          <span>{productTotal.toFixed(2)} บาท</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span>รวมค่าขนส่ง:</span>
-          <span>{totalShipping.toFixed(2)} บาท</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span>รวมค่าบรรจุภัณฑ์:</span>
-          <span>{totalPackaging.toFixed(2)} บาท</span>
-        </div>
-      </div>
 
       <div className="border-t-2 pt-2 space-y-1">
         <h3>จำนวนพัสดุ: {receiptData.orderList.length} รายการ</h3>
