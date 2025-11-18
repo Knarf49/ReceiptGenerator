@@ -100,7 +100,7 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
     return { receiptNumber, formattedDate, formattedTime, counter };
   }, []); // Empty dependency = คำนวณครั้งเดียว
 
-  const { productTotal, totalShipping, totalPackaging, grandTotal } = totals;
+  const { grandTotal } = totals;
   const { receiptNumber, formattedDate, formattedTime } = dateInfo;
 
   return (
