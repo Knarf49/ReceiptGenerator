@@ -10,6 +10,8 @@ interface ReceiptData {
     shippingCompany?: string;
     receiver?: string;
     province?: string;
+    otherCost?: number;
+    discount?: number;
   }>;
 }
 
@@ -55,9 +57,9 @@ function getNextReceiptNumber(): { receiptNumber: string; counter: number } {
 }
 
 function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
-  // คำนวณยอดรวมแต่ละรายการ (ราคาสินค้า + ค่าขนส่ง + ค่าบรรจุภัณฑ์)
+  // คำนวณยอดรวมแต่ละรายการ (ค่าขนส่ง + ค่าบรรจุภัณฑ์ + ค่าใช้จ่ายอื่นๆ - ส่วนลด)
   const calculateItemTotal = (item: (typeof receiptData.orderList)[0]) => {
-    return item.shippingCost + item.packagingCost;
+    return item.shippingCost + item.packagingCost + (item.otherCost || 0) - (item.discount || 0);
   };
 
   // ใช้ useMemo เพื่อ cache การคำนวณ - จะคำนวณใหม่ก็ต่อเมื่อ orderList เปลี่ยน
@@ -141,6 +143,18 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
                   <span>ค่าบรรจุภัณฑ์</span>
                   <span>{item.packagingCost.toFixed(2)} บาท</span>
                 </div>
+                {item.otherCost && item.otherCost > 0 && (
+                  <div className="flex justify-between">
+                    <span>ค่าใช้จ่ายอื่นๆ</span>
+                    <span>{item.otherCost.toFixed(2)} บาท</span>
+                  </div>
+                )}
+                {item.discount && item.discount > 0 && (
+                  <div className="flex justify-between text-red-600">
+                    <span>ส่วนลด</span>
+                    <span>-{item.discount.toFixed(2)} บาท</span>
+                  </div>
+                )}
                 <div className="pt-1 space-y-0.5">
                   <div>
                     <span>ขนส่ง: </span>

@@ -12,6 +12,8 @@ export interface OrderItem {
   receiver: string;
   shippingCompany: string;
   province: string;
+  otherCost?: number;
+  discount?: number;
 }
 
 export interface ReceiptData {

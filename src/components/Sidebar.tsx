@@ -11,6 +11,8 @@ import {
 import { type ReceiptData, type OrderItem } from "@/App";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "./ui/scroll-area";
+import { Provinces } from "@/lib/provinces";
+import { Checkbox } from "./ui/checkbox";
 
 interface SidebarProps {
   receiptData: ReceiptData;
@@ -25,8 +27,11 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
     receiver: "",
     shippingCompany: "",
     province: "",
+    otherCost: 0,
+    discount: 0,
   });
-
+  const [otherChecked, setOtherChecked] = useState(false);
+  const [discountChecked, setDiscountChecked] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const addOrderItem = () => {
@@ -49,6 +54,8 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
                 receiver: newItem.receiver,
                 shippingCompany: newItem.shippingCompany,
                 province: newItem.province,
+                otherCost: otherChecked ? newItem.otherCost : 0,
+                discount: discountChecked ? newItem.discount : 0,
               }
             : item
         )
@@ -64,6 +71,8 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
         receiver: newItem.receiver,
         shippingCompany: newItem.shippingCompany,
         province: newItem.province,
+        otherCost: otherChecked ? newItem.otherCost : 0,
+        discount: discountChecked ? newItem.discount : 0,
       };
       updateReceiptData("orderList", [...receiptData.orderList, orderItem]);
     }
@@ -75,7 +84,11 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
       receiver: "",
       shippingCompany: "",
       province: "",
+      otherCost: 0,
+      discount: 0,
     });
+    setOtherChecked(false);
+    setDiscountChecked(false);
   };
 
   const removeOrderItem = (id: string) => {
@@ -93,7 +106,11 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
       receiver: item.receiver,
       shippingCompany: item.shippingCompany,
       province: item.province,
+      otherCost: item.otherCost || 0,
+      discount: item.discount || 0,
     });
+    setOtherChecked((item.otherCost || 0) > 0);
+    setDiscountChecked((item.discount || 0) > 0);
     setEditingId(item.id);
   };
 
@@ -105,7 +122,11 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
       receiver: "",
       shippingCompany: "",
       province: "",
+      otherCost: 0,
+      discount: 0,
     });
+    setOtherChecked(false);
+    setDiscountChecked(false);
     setEditingId(null);
   };
 
@@ -247,89 +268,81 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
                     <SelectValue placeholder="เลือกจังหวัด" />
                   </SelectTrigger>
                   <SelectContent className="bg-white max-h-60">
-                    <SelectItem value="กรุงเทพมหานคร">กรุงเทพมหานคร</SelectItem>
-                    <SelectItem value="กระบี่">กระบี่</SelectItem>
-                    <SelectItem value="กาญจนบุรี">กาญจนบุรี</SelectItem>
-                    <SelectItem value="กาฬสินธุ์">กาฬสินธุ์</SelectItem>
-                    <SelectItem value="กำแพงเพชร">กำแพงเพชร</SelectItem>
-                    <SelectItem value="ขอนแก่น">ขอนแก่น</SelectItem>
-                    <SelectItem value="จันทบุรี">จันทบุรี</SelectItem>
-                    <SelectItem value="ฉะเชิงเทรา">ฉะเชิงเทรา</SelectItem>
-                    <SelectItem value="ชลบุรี">ชลบุรี</SelectItem>
-                    <SelectItem value="ชัยนาท">ชัยนาท</SelectItem>
-                    <SelectItem value="ชัยภูมิ">ชัยภูมิ</SelectItem>
-                    <SelectItem value="ชุมพร">ชุมพร</SelectItem>
-                    <SelectItem value="เชียงราย">เชียงราย</SelectItem>
-                    <SelectItem value="เชียงใหม่">เชียงใหม่</SelectItem>
-                    <SelectItem value="ตรัง">ตรัง</SelectItem>
-                    <SelectItem value="ตราด">ตราด</SelectItem>
-                    <SelectItem value="ตาก">ตาก</SelectItem>
-                    <SelectItem value="นครนายก">นครนายก</SelectItem>
-                    <SelectItem value="นครปฐม">นครปฐม</SelectItem>
-                    <SelectItem value="นครพนม">นครพนม</SelectItem>
-                    <SelectItem value="นครราชสีมา">นครราชสีมา</SelectItem>
-                    <SelectItem value="นครศรีธรรมราช">นครศรีธรรมราช</SelectItem>
-                    <SelectItem value="นครสวรรค์">นครสวรรค์</SelectItem>
-                    <SelectItem value="นนทบุรี">นนทบุรี</SelectItem>
-                    <SelectItem value="นราธิวาส">นราธิวาส</SelectItem>
-                    <SelectItem value="น่าน">น่าน</SelectItem>
-                    <SelectItem value="บึงกาฬ">บึงกาฬ</SelectItem>
-                    <SelectItem value="บุรีรัมย์">บุรีรัมย์</SelectItem>
-                    <SelectItem value="ปทุมธานี">ปทุมธานี</SelectItem>
-                    <SelectItem value="ประจวบคีรีขันธ์">
-                      ประจวบคีรีขันธ์
-                    </SelectItem>
-                    <SelectItem value="ปราจีนบุรี">ปราจีนบุรี</SelectItem>
-                    <SelectItem value="ปัตตานี">ปัตตานี</SelectItem>
-                    <SelectItem value="พระนครศรีอยุธยา">
-                      พระนครศรีอยุธยา
-                    </SelectItem>
-                    <SelectItem value="พังงา">พังงา</SelectItem>
-                    <SelectItem value="พัทลุง">พัทลุง</SelectItem>
-                    <SelectItem value="พิจิตร">พิจิตร</SelectItem>
-                    <SelectItem value="พิษณุโลก">พิษณุโลก</SelectItem>
-                    <SelectItem value="เพชรบุรี">เพชรบุรี</SelectItem>
-                    <SelectItem value="เพชรบูรณ์">เพชรบูรณ์</SelectItem>
-                    <SelectItem value="แพร่">แพร่</SelectItem>
-                    <SelectItem value="พะเยา">พะเยา</SelectItem>
-                    <SelectItem value="ภูเก็ต">ภูเก็ต</SelectItem>
-                    <SelectItem value="มหาสารคาม">มหาสารคาม</SelectItem>
-                    <SelectItem value="มุกดาหาร">มุกดาหาร</SelectItem>
-                    <SelectItem value="แม่ฮ่องสอน">แม่ฮ่องสอน</SelectItem>
-                    <SelectItem value="ยะลา">ยะลา</SelectItem>
-                    <SelectItem value="ยโสธร">ยโสธร</SelectItem>
-                    <SelectItem value="ร้อยเอ็ด">ร้อยเอ็ด</SelectItem>
-                    <SelectItem value="ระนอง">ระนอง</SelectItem>
-                    <SelectItem value="ระยอง">ระยอง</SelectItem>
-                    <SelectItem value="ราชบุรี">ราชบุรี</SelectItem>
-                    <SelectItem value="ลพบุรี">ลพบุรี</SelectItem>
-                    <SelectItem value="ลำปาง">ลำปาง</SelectItem>
-                    <SelectItem value="ลำพูน">ลำพูน</SelectItem>
-                    <SelectItem value="เลย">เลย</SelectItem>
-                    <SelectItem value="ศรีสะเกษ">ศรีสะเกษ</SelectItem>
-                    <SelectItem value="สกลนคร">สกลนคร</SelectItem>
-                    <SelectItem value="สงขลา">สงขลา</SelectItem>
-                    <SelectItem value="สตูล">สตูล</SelectItem>
-                    <SelectItem value="สมุทรปราการ">สมุทรปราการ</SelectItem>
-                    <SelectItem value="สมุทรสงคราม">สมุทรสงคราม</SelectItem>
-                    <SelectItem value="สมุทรสาคร">สมุทรสาคร</SelectItem>
-                    <SelectItem value="สระแก้ว">สระแก้ว</SelectItem>
-                    <SelectItem value="สระบุรี">สระบุรี</SelectItem>
-                    <SelectItem value="สิงห์บุรี">สิงห์บุรี</SelectItem>
-                    <SelectItem value="สุโขทัย">สุโขทัย</SelectItem>
-                    <SelectItem value="สุพรรณบุรี">สุพรรณบุรี</SelectItem>
-                    <SelectItem value="สุราษฎร์ธานี">สุราษฎร์ธานี</SelectItem>
-                    <SelectItem value="สุรินทร์">สุรินทร์</SelectItem>
-                    <SelectItem value="หนองคาย">หนองคาย</SelectItem>
-                    <SelectItem value="หนองบัวลำภู">หนองบัวลำภู</SelectItem>
-                    <SelectItem value="อ่างทอง">อ่างทอง</SelectItem>
-                    <SelectItem value="อำนาจเจริญ">อำนาจเจริญ</SelectItem>
-                    <SelectItem value="อุดรธานี">อุดรธานี</SelectItem>
-                    <SelectItem value="อุตรดิตถ์">อุตรดิตถ์</SelectItem>
-                    <SelectItem value="อุทัยธานี">อุทัยธานี</SelectItem>
-                    <SelectItem value="อุบลราชธานี">อุบลราชธานี</SelectItem>
+                    {Provinces.map((p) => (
+                      <SelectItem value={p}>{p}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="space-x-3 space-y-2">
+                <Label htmlFor="other-cost">ค่าใช้จ่ายอื่นๆ</Label>
+                <div className="flex items-center gap-x-3">
+                  <Checkbox
+                    className="cursor-pointer border-primary"
+                    checked={otherChecked}
+                    onClick={() => setOtherChecked(!otherChecked)}
+                  />
+                  <div
+                    className={
+                      otherChecked == false
+                        ? "cursor-not-allowed opacity-40 bg-primary/20 rounded-md"
+                        : ""
+                    }
+                  >
+                    <Input
+                      id="other-cost"
+                      type="number"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                      className="border-primary"
+                      disabled={!otherChecked}
+                      value={newItem.otherCost || ""}
+                      onChange={(e) =>
+                        setNewItem({
+                          ...newItem,
+                          otherCost: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-x-3 space-y-2">
+                <Label htmlFor="discount">ส่วนลด</Label>
+                <div className="flex items-center gap-x-3">
+                  <Checkbox
+                    className="cursor-pointer border-primary"
+                    checked={discountChecked}
+                    onClick={() => setDiscountChecked(!discountChecked)}
+                  />
+                  <div
+                    className={
+                      discountChecked == false
+                        ? "cursor-not-allowed opacity-40 bg-primary/20 rounded-md"
+                        : ""
+                    }
+                  >
+                    <Input
+                      id="discount"
+                      type="number"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                      className="border-primary"
+                      disabled={!discountChecked}
+                      value={newItem.discount || ""}
+                      onChange={(e) =>
+                        setNewItem({
+                          ...newItem,
+                          discount: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
               </div>
 
               <Button onClick={addOrderItem} className="w-full">
