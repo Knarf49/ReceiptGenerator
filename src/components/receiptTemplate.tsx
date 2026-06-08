@@ -119,7 +119,7 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
       {/* Order List */}
       {receiptData.orderList.length > 0 && (
         <div className="border-t pt-2 space-y-2">
-          <h3 className="font-semibold">รายการสินค้า:</h3>
+          <h3 className="font-semibold">เลขพัสดุ:</h3>
           {receiptData.orderList.map((item, index) => (
             <div key={item.id} className="pb-2 border-b last:border-b-0">
               <div className="flex justify-between text-sm font-medium">
