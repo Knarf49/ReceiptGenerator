@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from "react";
-import { Sidebar } from "@/components/Sidebar";
+import { Sidebar, type TemplateType } from "@/components/Sidebar";
 import ReceiptTemplate from "@/components/receiptTemplate";
+import ReceiptTemplateNoodle from "@/components/receiptTemplateNoodle";
 import { useReactToPrint } from "react-to-print";
 import { Button } from "@/components/ui/button";
 import "./app.css";
@@ -25,6 +26,8 @@ function App() {
     orderList: [],
   });
 
+  const [template, setTemplate] = useState<TemplateType>("postshop");
+
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrint = useReactToPrint({ contentRef });
 
@@ -44,10 +47,25 @@ function App() {
       <Sidebar
         receiptData={receiptData}
         updateReceiptData={updateReceiptData}
+        template={template}
+        setTemplate={setTemplate}
       />
       <div className="container pr-80">
         <div ref={contentRef}>
-          <ReceiptTemplate receiptData={receiptData} />
+          {template === "postshop" ? (
+            <ReceiptTemplate receiptData={receiptData} />
+          ) : (
+            <ReceiptTemplateNoodle
+              receiptData={{
+                customerName: receiptData.customerName,
+                orderList: receiptData.orderList.map((item) => ({
+                  id: item.id,
+                  name: item.name,
+                  price: item.shippingCost,
+                })),
+              }}
+            />
+          )}
         </div>
       </div>
       <Button
