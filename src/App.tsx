@@ -8,10 +8,8 @@ export interface OrderItem {
   id: string;
   name: string;
   shippingCost: number;
-  packagingCost: number;
   receiver: string;
   shippingCompany: string;
-  province: string;
   otherCost?: number;
   discount?: number;
 }

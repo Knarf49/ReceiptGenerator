@@ -6,10 +6,8 @@ interface ReceiptData {
     id: string;
     name: string;
     shippingCost: number;
-    packagingCost: number;
     shippingCompany?: string;
     receiver?: string;
-    province?: string;
     otherCost?: number;
     discount?: number;
   }>;
@@ -59,7 +57,7 @@ function getNextReceiptNumber(): { receiptNumber: string; counter: number } {
 function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
   // คำนวณยอดรวมแต่ละรายการ (ค่าขนส่ง + ค่าบรรจุภัณฑ์ + ค่าใช้จ่ายอื่นๆ - ส่วนลด)
   const calculateItemTotal = (item: (typeof receiptData.orderList)[0]) => {
-    return item.shippingCost + item.packagingCost + (item.otherCost || 0) - (item.discount || 0);
+    return item.shippingCost + (item.otherCost || 0) - (item.discount || 0);
   };
 
   // ใช้ useMemo เพื่อ cache การคำนวณ - จะคำนวณใหม่ก็ต่อเมื่อ orderList เปลี่ยน
@@ -71,17 +69,12 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
       0
     );
 
-    const totalPackaging = receiptData.orderList.reduce(
-      (sum, item) => sum + item.packagingCost,
-      0
-    );
-
     const grandTotal = receiptData.orderList.reduce(
       (sum, item) => sum + calculateItemTotal(item),
       0
     );
 
-    return { productTotal, totalShipping, totalPackaging, grandTotal };
+    return { productTotal, totalShipping, grandTotal };
   }, [receiptData.orderList]);
 
   // สร้างเลขที่ใบเสร็จและวันที่ - เรียกใช้ครั้งเดียวตอน mount
@@ -136,12 +129,8 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
               </div>
               <div className="text-xs space-y-0.5 mt-1 ml-4">
                 <div className="flex justify-between">
-                  <span>ค่าขนส่ง</span>
+                  <span>ค่าขนส่ง + บรรจุภัณฑ์</span>
                   <span>{item.shippingCost.toFixed(2)} บาท</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>ค่าบรรจุภัณฑ์</span>
-                  <span>{item.packagingCost.toFixed(2)} บาท</span>
                 </div>
                 {item.otherCost && item.otherCost > 0 && (
                   <div className="flex justify-between">
@@ -165,12 +154,6 @@ function ReceiptTemplate({ receiptData }: ReceiptTemplateProps) {
                   <div>
                     <span>ผู้รับ: </span>
                     {item.receiver || (
-                      <span className="text-gray-400">(ไม่ระบุ)</span>
-                    )}
-                  </div>
-                  <div>
-                    <span>จังหวัด: </span>
-                    {item.province || (
                       <span className="text-gray-400">(ไม่ระบุ)</span>
                     )}
                   </div>

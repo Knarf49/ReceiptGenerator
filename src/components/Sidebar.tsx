@@ -11,7 +11,6 @@ import {
 import { type ReceiptData, type OrderItem } from "@/App";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "./ui/scroll-area";
-import { Provinces } from "@/lib/provinces";
 import { Checkbox } from "./ui/checkbox";
 
 interface SidebarProps {
@@ -23,10 +22,8 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
   const [newItem, setNewItem] = useState({
     name: "",
     shippingCost: 0,
-    packagingCost: 0,
     receiver: "",
     shippingCompany: "",
-    province: "",
     otherCost: 0,
     discount: 0,
   });
@@ -50,10 +47,8 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
                 ...item,
                 name: newItem.name,
                 shippingCost: newItem.shippingCost,
-                packagingCost: newItem.packagingCost,
                 receiver: newItem.receiver,
                 shippingCompany: newItem.shippingCompany,
-                province: newItem.province,
                 otherCost: otherChecked ? newItem.otherCost : 0,
                 discount: discountChecked ? newItem.discount : 0,
               }
@@ -67,10 +62,8 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
         id: Date.now().toString(),
         name: newItem.name,
         shippingCost: newItem.shippingCost,
-        packagingCost: newItem.packagingCost,
         receiver: newItem.receiver,
         shippingCompany: newItem.shippingCompany,
-        province: newItem.province,
         otherCost: otherChecked ? newItem.otherCost : 0,
         discount: discountChecked ? newItem.discount : 0,
       };
@@ -80,10 +73,8 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
     setNewItem({
       name: "",
       shippingCost: 0,
-      packagingCost: 0,
       receiver: "",
       shippingCompany: "",
-      province: "",
       otherCost: 0,
       discount: 0,
     });
@@ -102,10 +93,8 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
     setNewItem({
       name: item.name,
       shippingCost: item.shippingCost,
-      packagingCost: item.packagingCost,
       receiver: item.receiver,
       shippingCompany: item.shippingCompany,
-      province: item.province,
       otherCost: item.otherCost || 0,
       discount: item.discount || 0,
     });
@@ -118,10 +107,8 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
     setNewItem({
       name: "",
       shippingCost: 0,
-      packagingCost: 0,
       receiver: "",
       shippingCompany: "",
-      province: "",
       otherCost: 0,
       discount: 0,
     });
@@ -182,42 +169,22 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label htmlFor="item-shipping">ค่าขนส่ง (บาท)</Label>
-                  <Input
-                    id="item-shipping"
-                    type="number"
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    value={newItem.shippingCost || ""}
-                    onChange={(e) =>
-                      setNewItem({
-                        ...newItem,
-                        shippingCost: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="item-packaging">ค่าบรรจุภัณฑ์ (บาท)</Label>
-                  <Input
-                    id="item-packaging"
-                    type="number"
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    value={newItem.packagingCost || ""}
-                    onChange={(e) =>
-                      setNewItem({
-                        ...newItem,
-                        packagingCost: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="item-shipping">ค่าขนส่ง + บรรจุภัณฑ์ (บาท)</Label>
+                <Input
+                  id="item-shipping"
+                  type="number"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                  value={newItem.shippingCost || ""}
+                  onChange={(e) =>
+                    setNewItem({
+                      ...newItem,
+                      shippingCost: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                />
               </div>
 
               {/* บริษัทขนส่ง */}
@@ -242,7 +209,7 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
                 </Select>
               </div>
 
-              {/* ผู้รับและจังหวัด */}
+              {/* ผู้รับ */}
               <div className="space-y-2">
                 <Label htmlFor="item-receiver">ผู้รับ</Label>
                 <Input
@@ -254,25 +221,6 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
                     setNewItem({ ...newItem, receiver: e.target.value })
                   }
                 />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="item-province">จังหวัด</Label>
-                <Select
-                  value={newItem.province}
-                  onValueChange={(value) =>
-                    setNewItem({ ...newItem, province: value })
-                  }
-                >
-                  <SelectTrigger id="item-province">
-                    <SelectValue placeholder="เลือกจังหวัด" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white max-h-60">
-                    {Provinces.map((p) => (
-                      <SelectItem value={p}>{p}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
 
               <div className="space-x-3 space-y-2">
@@ -364,16 +312,8 @@ export function Sidebar({ receiptData, updateReceiptData }: SidebarProps) {
                         <div className="flex-1">
                           <p className="font-medium text-sm">{item.name}</p>
                           <div className="text-xs text-gray-600 space-y-0.5 mt-1">
-                            <p>ค่าขนส่ง: {item.shippingCost.toFixed(2)} บาท</p>
-                            <p>
-                              ค่าบรรจุภัณฑ์: {item.packagingCost.toFixed(2)} บาท
-                            </p>
                             <p className="font-semibold text-gray-800">
-                              รวม:{" "}
-                              {(item.shippingCost + item.packagingCost).toFixed(
-                                2
-                              )}{" "}
-                              บาท
+                              ค่าขนส่ง + บรรจุภัณฑ์: {item.shippingCost.toFixed(2)} บาท
                             </p>
                           </div>
                         </div>
